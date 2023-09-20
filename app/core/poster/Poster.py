@@ -1,13 +1,14 @@
 import asyncio
 from app.core.telegram import tg_bot
+from app.core.config import config
 
-class Queue:
+class Poster:
     def __init__(self) -> None:
         self.__queue = asyncio.Queue()
 
     async def _worker(self):
         message = await self.__queue.get()
-        await tg_bot.send_message(message)
+        await tg_bot.send_message(message.text)
         self.__queue.task_done()
 
     async def put(self, item):
@@ -15,9 +16,9 @@ class Queue:
     
     async def start(self):
         while True:
-            await asyncio.sleep(5)
+            await asyncio.sleep(config.app.poster.sleep)
             if not self.__queue.empty():
                 asyncio.create_task(self._worker())
         
 
-queue = Queue()
+poster = Poster()
