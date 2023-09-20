@@ -1,4 +1,4 @@
-from app.core.queue import queue
+from app.core.validator import validator
 from app.core.message import Message
 from typing import Optional
 
@@ -18,4 +18,4 @@ class Parser:
     async def handle_message(self, data) -> None:
         message = self.load_message(data)
         if message:
-            await queue.put(message)
+            await validator.add_message(message)
