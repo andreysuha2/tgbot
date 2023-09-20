@@ -1,12 +1,13 @@
 from app.core.message import Message
 from app.core.parser import Parser
 from app.core.telegram import tg_client
+from app.core.config import config
 from telethon import events
 
 class TelegramParser(Parser):
     def __init__(self) -> None:
         super().__init__("telegram")
-        self.chanels = [ 'https://t.me/super_test_chanel2', 'https://t.me/super_test_chanel' ]
+        self.chanels = config.app.parsers.telegram_chanels
     
     async def start(self) -> None:
         @tg_client.on(events.NewMessage(chats=self.chanels))

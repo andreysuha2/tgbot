@@ -1,5 +1,6 @@
 from app.core.message import Message
 from app.core.poster import poster
+from app.core.config import config
 import asyncio
 
 class Validator:
@@ -20,7 +21,7 @@ class Validator:
 
     async def start(self) -> None:
         while True:
-            await asyncio.sleep(5)
+            await asyncio.sleep(config.app.validator.sleep)
             if not self.__queue.empty():
                 asyncio.create_task(self.__worker())
 

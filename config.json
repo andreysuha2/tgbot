@@ -1,0 +1,14 @@
+{
+    "parsers": {
+        "telegram_chanels": [
+            "https://t.me/super_test_chanel2", 
+            "https://t.me/super_test_chanel"
+        ]
+    },
+    "validator": {
+        "sleep": 5
+    },
+    "poster": {
+        "sleep": 5
+    }
+}
