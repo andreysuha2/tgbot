@@ -1,4 +1,5 @@
 from app.core.message import Message
+from app.core.poster import poster
 import asyncio
 
 class Validator:
@@ -14,7 +15,7 @@ class Validator:
     async def __worker(self) -> None:
         message = await self.__queue.get()
         if self.__validate(message):
-            print(message)
+            await poster.put(message)
         self.__queue.task_done()
 
     async def start(self) -> None:
