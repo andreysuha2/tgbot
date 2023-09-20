@@ -3,3 +3,5 @@ botenv/**
 .git
 .vscode/*
 .env
+*.session
+*.session-journal
