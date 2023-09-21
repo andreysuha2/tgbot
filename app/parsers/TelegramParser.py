@@ -1,4 +1,4 @@
-from app.core.message import Message
+from app.models import Message
 from app.core.parser import Parser
 from app.core.telegram import tg_client
 from app.core.config import config

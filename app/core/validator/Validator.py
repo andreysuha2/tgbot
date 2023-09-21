@@ -1,4 +1,4 @@
-from app.core.message import Message
+from app.models import Message, MessageStatus
 from app.core.poster import poster
 from app.core.config import config
 import asyncio
@@ -11,12 +11,18 @@ class Validator:
         await self.__queue.put(message)
 
     def __validate(self, message: Message) -> None:
+        message.status = MessageStatus.ON_VALIDATE
+        message.save()
         return True
     
     async def __worker(self) -> None:
         message = await self.__queue.get()
         if self.__validate(message):
+            message.status = MessageStatus.PENDING_FOR_POST
             await poster.put(message)
+        else:
+            message.status = MessageStatus.DECLINE
+        message.save()
         self.__queue.task_done()
 
     async def start(self) -> None:

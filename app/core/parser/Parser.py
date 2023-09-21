@@ -1,5 +1,5 @@
 from app.core.validator import validator
-from app.core.message import Message
+from app.models import Message
 from typing import Optional
 
 class Parser:
@@ -9,8 +9,15 @@ class Parser:
     def start(self) -> None:
         pass
 
-    def create_message(self, *args, **kargs) -> None:
-        return Message(self.source, *args, **kargs)
+    def create_message(self, source_id, message_id, text) -> Message:
+        message = Message(
+            source=str(self.source),
+            source_id=str(source_id),
+            message_id=str(message_id),
+            text=text
+        )
+        message.save()
+        return message
     
     async def load_message(self, data) -> Optional[Message]:
         pass
