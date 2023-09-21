@@ -1,9 +1,17 @@
 from app.models import Message, MessageStatus
 from app.core.poster import poster
 from app.core.config import config
+from datetime import datetime, timedelta
+from app.core.config import config
+from mongoengine.queryset.visitor import Q
+import spacy
 import asyncio
 
 class Validator:
+    max_days_for_compare = config.app.validator.max_days_for_compare
+    nlp = spacy.load(config.app.validator.spacy_model)
+    similarity_coef = config.app.validator.similarity_coef
+
     def __init__(self) -> None:
         self.__queue = asyncio.Queue()
 
@@ -13,7 +21,22 @@ class Validator:
     def __validate(self, message: Message) -> None:
         message.status = MessageStatus.ON_VALIDATE
         message.save()
-        return True
+        raw = { "timestamp": { "$gte": datetime.now() - timedelta(days=self.max_days_for_compare) } }
+        messages = Message.objects(
+            Q(__raw__=raw) & (
+                Q(status=MessageStatus.DECLINE) |
+                Q(status=MessageStatus.POSTED) |
+                Q(status=MessageStatus.PENDING_FOR_POST)
+            )
+        )
+        similarity = 0
+        for m in messages:
+            nlp_m = self.nlp(m.text)
+            nlp_message = self.nlp(message.text)
+            current_similarity = nlp_message.similarity(nlp_m)
+            if current_similarity > similarity:
+                similarity = current_similarity
+        return similarity < self.similarity_coef
     
     async def __worker(self) -> None:
         message = await self.__queue.get()
