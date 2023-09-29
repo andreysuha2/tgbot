@@ -4,4 +4,4 @@ from aiogram import Dispatcher
 
 client = TgClient()
 bot = TgBot()
-dp = Dispatcher(bot)
+dp = Dispatcher()

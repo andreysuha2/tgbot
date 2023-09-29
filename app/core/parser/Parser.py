@@ -10,14 +10,17 @@ class Parser:
         pass
 
     def create_message(self, source_id, message_id, text) -> Message:
-        message = Message(
-            source=str(self.source),
-            source_id=str(source_id),
-            message_id=str(message_id),
-            text=text
-        )
-        message.save()
-        return message
+        message = Message.objects(source=self.source, source_id=source_id, message_id=message_id)
+        if not message:
+            message = Message(
+                source=str(self.source),
+                source_id=str(source_id),
+                message_id=str(message_id),
+                text=text
+            )
+            message.save()
+            return message
+        return None
     
     async def load_message(self, data) -> Optional[Message]:
         pass

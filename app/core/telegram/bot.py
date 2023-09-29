@@ -11,5 +11,5 @@ class TgBot(Bot):
         else:
             raise TelegramBotCredentialsError
 
-    async def send_message(self,*args, **kargs):
+    async def post_message_to_chanel(self,*args, **kargs):
         return await super().send_message(self.__CHENAL_ID, *args, **kargs)

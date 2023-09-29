@@ -6,7 +6,10 @@
         ]
     },
     "validator": {
-        "sleep": 5
+        "sleep": 5,
+        "max_days_for_compare": 5,
+        "spacy_model": "uk_core_news_lg",
+        "similarity_coef": 0.7
     },
     "poster": {
         "sleep": 5
