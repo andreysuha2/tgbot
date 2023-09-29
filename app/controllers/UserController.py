@@ -2,7 +2,7 @@ from app.models import User, UserRole
 from aiogram import types
 from app.core.telegram import tg_bot
 from app.core.config import config
-from app.callbacks_factorys.user_callbacks import AcсeptModeratorCallbackFactory
+from app.callbacks_factorys.user_callbacks import AcceptModeratorCallbackFactory
 
 class UserController:
     SUPER_ADMINS = config.env.get("BOT_SUPER_ADMINS", "").split(",")
@@ -12,11 +12,11 @@ class UserController:
             [
                 types.InlineKeyboardButton(
                     text='Підтвердити',
-                    callback_data=AcсeptModeratorCallbackFactory(action="accept", user_id=user_id).pack()
+                    callback_data=AcceptModeratorCallbackFactory(action="accept", user_id=user_id).pack()
                 ),
                 types.InlineKeyboardButton(
                     text='Відхилити',
-                    callback_data=AcсeptModeratorCallbackFactory(action="decline", user_id=user_id).pack()
+                    callback_data=AcceptModeratorCallbackFactory(action="decline", user_id=user_id).pack()
                 )
             ]
         ]

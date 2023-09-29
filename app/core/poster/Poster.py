@@ -5,7 +5,7 @@ from app.models import MessageStatus
 
 class Poster:
     def __init__(self) -> None:
-        self.__queue = asyncio.Queue()
+        self.__queue = asyncio.Queue()      
 
     async def _worker(self):
         message = await self.__queue.get()

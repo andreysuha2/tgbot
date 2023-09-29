@@ -1,9 +1,12 @@
-from app.models import Message, MessageStatus
+from app.models import Message, MessageStatus, User, UserRole
 from app.core.poster import poster
 from app.core.config import config
 from datetime import datetime, timedelta
 from app.core.config import config
 from mongoengine.queryset.visitor import Q
+from app.core.telegram import tg_bot
+from aiogram import types
+from app.callbacks_factorys.message_callbacks import AcceptMessageCallbackFactory
 import spacy
 import asyncio
 
@@ -15,11 +18,45 @@ class Validator:
     def __init__(self) -> None:
         self.__queue = asyncio.Queue()
 
+    def _get_accept_message_buttons(self, message_id) -> types.InlineKeyboardMarkup:
+        buttons = [
+            [
+                types.InlineKeyboardButton(
+                    text='Опублікувати',
+                    callback_data=AcceptMessageCallbackFactory(action="accept", message_id=message_id).pack()
+                ),
+                types.InlineKeyboardButton(
+                    text='Відхилити',
+                    callback_data=AcceptMessageCallbackFactory(action="decline", message_id=message_id).pack()
+                )
+            ]
+        ]
+        return types.InlineKeyboardMarkup(inline_keyboard=buttons)
+
+    async def send_to_human_validation(self, message: Message):
+        moderators = User.objects(Q(role=UserRole.ADMIN) | Q(role=UserRole.MODERATOR))
+        for moderator in moderators:
+            await tg_bot.send_message(
+                moderator.user_id,
+                message.text,
+                reply_markup=self._get_accept_message_buttons(str(message.id))
+            )
+
+    async def moderator_accept_message(self, message: Message):
+        message.status = MessageStatus.PENDING_FOR_POST
+        message.save()
+        await poster.put(message)
+        
+
+    def moderator_decline_message(self, message: Message):
+        message.status = MessageStatus.DECLINED_BY_HUMAN
+        message.save()    
+
     async def add_message(self, message: Message) -> None:
         await self.__queue.put(message)
 
     def __validate(self, message: Message) -> None:
-        message.status = MessageStatus.ON_VALIDATE
+        message.status = MessageStatus.ON_AI_VALIDATE
         message.save()
         raw = { "timestamp": { "$gte": datetime.now() - timedelta(days=self.max_days_for_compare) } }
         messages = Message.objects(
@@ -41,10 +78,10 @@ class Validator:
     async def __worker(self) -> None:
         message = await self.__queue.get()
         if self.__validate(message):
-            message.status = MessageStatus.PENDING_FOR_POST
-            await poster.put(message)
+            message.status = MessageStatus.ON_HUMAN_VALIDATE
+            await self.send_to_human_validation(message)
         else:
-            message.status = MessageStatus.DECLINE
+            message.status = MessageStatus.DECLINED_BY_AI
         message.save()
         self.__queue.task_done()
 

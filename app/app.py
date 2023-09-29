@@ -3,13 +3,14 @@ from app.core.validator import validator
 from app.core.poster import poster
 from app.parsers import list
 from app.routes.user import router as user_router
+from app.routes.messages import router as message_router
 import asyncio
 
 async def main():
     for parser in list:
         asyncio.create_task(parser.start())
 
-    tg_bot_dispatcher.include_routers(user_router)
+    tg_bot_dispatcher.include_routers(user_router, message_router)
     asyncio.create_task(validator.start())
     asyncio.create_task(poster.start())
     await tg_client.start()
