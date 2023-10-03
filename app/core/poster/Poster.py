@@ -5,11 +5,11 @@ from app.models import MessageStatus
 
 class Poster:
     def __init__(self) -> None:
-        self.__queue = asyncio.Queue()
+        self.__queue = asyncio.Queue()      
 
     async def _worker(self):
         message = await self.__queue.get()
-        await tg_bot.send_message(message.text)
+        await tg_bot.post_message_to_chanel(message.text)
         message.status = MessageStatus.POSTED
         message.save()
         self.__queue.task_done()
