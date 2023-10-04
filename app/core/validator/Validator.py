@@ -61,7 +61,8 @@ class Validator:
         raw = { "timestamp": { "$gte": datetime.now() - timedelta(days=self.max_days_for_compare) } }
         messages = Message.objects(
             Q(__raw__=raw) & (
-                Q(status=MessageStatus.DECLINE) |
+                Q(status=MessageStatus.DECLINED_BY_AI) |
+                Q(status=MessageStatus.DECLINED_BY_HUMAN) |
                 Q(status=MessageStatus.POSTED) |
                 Q(status=MessageStatus.PENDING_FOR_POST)
             )
