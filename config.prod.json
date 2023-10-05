@@ -1,0 +1,20 @@
+{
+    "parsers": {
+        "telegram_chanels": [
+            "https://t.me/privatnamemarnya",
+            "https://t.me/ssternenko",
+            "https://t.me/holosameryky",
+            "https://t.me/gruntmedia",
+            "https://t.me/lachentyt"
+        ]
+    },
+    "validator": {
+        "sleep": 5,
+        "max_days_for_compare": 5,
+        "spacy_model": "uk_core_news_lg",
+        "similarity_coef": 0.7
+    },
+    "poster": {
+        "sleep": 5
+    }
+}
