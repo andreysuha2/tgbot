@@ -69,7 +69,6 @@ class Validator:
         similarity = 0
         if not message.text:
             return True
-        print(message.text)
         for m in messages:
             nlp_m = self.nlp(m.text)
             nlp_message = self.nlp(message.text)
