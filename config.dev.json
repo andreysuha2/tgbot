@@ -13,5 +13,8 @@
     },
     "poster": {
         "sleep": 5
+    },
+    "files": {
+        "temp_folder": "temp/"
     }
 }

@@ -6,6 +6,6 @@ class Config:
     def __init__(self) -> None:
         self.env = dotenv_values(find_dotenv())
         self.app_builder = ConfigBuilder()
-        self.app = self.app_builder.parse_config(f"{ROOT_DIR}/config.json")
+        self.app = self.app_builder.parse_config(f"{ROOT_DIR}/config.{self.env.get('ENV', 'dev')}.json")
 
 config = Config()
