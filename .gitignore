@@ -5,3 +5,4 @@ botenv/**
 .env
 *.session
 *.session-journal
+temp/*
