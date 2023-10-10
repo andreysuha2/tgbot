@@ -23,7 +23,6 @@ class Messages(Document):
     media = ListField(default=[])
 
     def remove_media_files(self):
-        print(self.media)
         if self.media:
             for file in self.media:
                 if os.path.isfile(file["path"]):
