@@ -15,10 +15,11 @@ class MessageController:
         await clb.answer(answer)
 
     async def decline_message(self, clb, message_id):
-        message = self._get_message(message_id)
+        message: Message = self._get_message(message_id)
         answer = "Повідомлення вже оброблене"
         if message:
             validator.moderator_decline_message(message)
+            message.remove_media_files()
             answer = "Повідомлення відхилено"
         await clb.answer(answer)
 

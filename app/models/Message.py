@@ -1,6 +1,7 @@
-from mongoengine import Document, StringField, DateTimeField, EnumField
+from mongoengine import Document, StringField, DateTimeField, EnumField, IntField, ListField
 from enum import Enum
 from datetime import datetime
+import os
 
 class MessageStatus(Enum):
     PENDING_FOR_VALIDATE = "pendind_for_validate"
@@ -18,3 +19,12 @@ class Messages(Document):
     text = StringField(required=True)
     timestamp = DateTimeField(default=datetime.utcnow)
     status = EnumField(MessageStatus, default=MessageStatus.PENDING_FOR_VALIDATE)
+    group_id = IntField(null=True)
+    media = ListField(default=[])
+
+    def remove_media_files(self):
+        print(self.media)
+        if self.media:
+            for file in self.media:
+                if os.path.isfile(file["path"]):
+                    os.remove(file["path"])

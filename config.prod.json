@@ -4,8 +4,9 @@
             "https://t.me/privatnamemarnya",
             "https://t.me/ssternenko",
             "https://t.me/holosameryky",
-            "https://t.me/gruntmedia",
-            "https://t.me/lachentyt"
+            "https://t.me/lachentyt",
+            "https://t.me/torontotv",
+            "https://t.me/gruntmedia"
         ]
     },
     "validator": {
@@ -16,5 +17,8 @@
     },
     "poster": {
         "sleep": 5
+    },
+    "files": {
+        "temp_folder": "temp/"
     }
 }

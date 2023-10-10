@@ -34,11 +34,11 @@ class Validator:
         return types.InlineKeyboardMarkup(inline_keyboard=buttons)
 
     async def send_to_human_validation(self, message: Message):
-        moderators = User.objects(Q(role=UserRole.ADMIN) | Q(role=UserRole.MODERATOR))
+        moderators: list[User] = User.objects(Q(role=UserRole.ADMIN) | Q(role=UserRole.MODERATOR))
         for moderator in moderators:
-            await tg_bot.send_message(
-                moderator.user_id,
-                message.text,
+            await tg_bot.post_message(
+                message,
+                chanel_id=moderator.user_id,
                 reply_markup=self._get_accept_message_buttons(str(message.id))
             )
 
@@ -62,12 +62,14 @@ class Validator:
         messages = Message.objects(
             Q(__raw__=raw) & (
                 Q(status=MessageStatus.DECLINED_BY_AI) |
-                Q(status=MessageStatus.DECLINED_BY_HUMAN) |
                 Q(status=MessageStatus.POSTED) |
                 Q(status=MessageStatus.PENDING_FOR_POST)
             )
         )
         similarity = 0
+        if not message.text:
+            return True
+        print(message.text)
         for m in messages:
             nlp_m = self.nlp(m.text)
             nlp_message = self.nlp(message.text)
@@ -77,7 +79,8 @@ class Validator:
         return similarity < self.similarity_coef
     
     async def __worker(self) -> None:
-        message = await self.__queue.get()
+        message_id = await self.__queue.get()
+        message = Message.objects(id=message_id).first()
         if self.__validate(message):
             message.status = MessageStatus.ON_HUMAN_VALIDATE
             await self.send_to_human_validation(message)
